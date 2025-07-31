@@ -1,0 +1,33 @@
+# .github/workflows/snyk.yml
+
+name: Build and Scan with Snyk
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  snyk-scan:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name:  Checkout code
+        uses: actions/checkout@v3
+
+      - name:  Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.11  # or match your local version
+
+      - name:  Install dependencies
+        run: |
+          pip install -r backend/requirements.txt
+
+      - name:  Snyk scan for Python project
+        uses: snyk/actions/python@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          args: test --file=backend/requirements.txt --package-manager=pip
