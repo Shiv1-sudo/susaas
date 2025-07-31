@@ -30,4 +30,4 @@ jobs:
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
-          args: test --file=backend/requirements.txt --package-manager=pip --debug
+          args: test --file=backend/requirements.txt --package-manager=pip --project-name=susaas-backend --debug
