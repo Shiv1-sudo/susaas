@@ -21,9 +21,9 @@ jobs:
         with:
           python-version: 3.11  # or match your local version
 
-      - name:  Install dependencies
-        run: |
-          pip install -r backend/requirements.txt
+ #     - name:  Install dependencies
+  #      run: |
+   #       pip install -r backend/requirements.txt
 
       - name:  Snyk scan for Python project
         uses: snyk/actions/python@master
