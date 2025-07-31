@@ -28,6 +28,8 @@ jobs:
 
       - name: Set up Snyk CLI
         uses: snyk/actions/setup@master
+        with:
+          version: 'latest'  # optional: specify Snyk CLI version
 
       - name: Authenticate with Snyk
         run: snyk auth ${{ secrets.SNYK_TOKEN }}
