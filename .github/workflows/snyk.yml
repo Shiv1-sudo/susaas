@@ -38,7 +38,7 @@ jobs:
         run: snyk test --file=backend/requirements.txt --package-manager=pip --project-name=susaas-backend
 
       - name: Build Docker image
-        run: docker build -t susaas-backend -f Dockerfile .
+        run: docker build -t susaas-backend -f backend/Dockerfile backend
 
       - name: Snyk scan for Docker image
         uses: snyk/actions/docker@master
