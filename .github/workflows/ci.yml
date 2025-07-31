@@ -39,7 +39,7 @@ jobs:
     - name: Snyk Dependency Scan
       uses: snyk/actions/python@master
       with:
-        args: --file=requirements.txt --package-manager=pip
+        args: --file=backend/requirements.txt --package-manager=pip --project-name=susaas-backend
       env:
         SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
 
