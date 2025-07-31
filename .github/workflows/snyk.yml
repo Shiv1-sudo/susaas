@@ -21,9 +21,10 @@ jobs:
         with:
           python-version: 3.11  # or match your local version
 
- #     - name:  Install dependencies
-  #      run: |
-   #       pip install -r backend/requirements.txt
+      - name:  Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r backend/requirements.txt
 
       - name:  Snyk scan for Python project
         uses: snyk/actions/python@master
@@ -31,3 +32,13 @@ jobs:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
           args: test --file=backend/requirements.txt --package-manager=pip --project-name=susaas-backend --debug
+      - name: Build Docker image
+        run: docker build -t susaas-backend -f Dockerfile .
+
+      - name: Snyk scan for Docker image
+        uses: snyk/actions/docker@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          image: susaas-backend
+          args: --file=Dockerfile --project-name=susaas-backend-container --severity-threshold=medium --exclude-base-image-vulns
