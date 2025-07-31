@@ -46,4 +46,4 @@ jobs:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
           image: susaas-backend
-          args: --file=Dockerfile --project-name=susaas-backend-container --severity-threshold=medium --exclude-base-image-vulns
+          args: --file=backend/Dockerfile --project-name=susaas-backend-container --severity-threshold=medium --exclude-base-image-vulns
