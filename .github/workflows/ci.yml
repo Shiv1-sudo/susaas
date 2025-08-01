@@ -56,6 +56,16 @@ jobs:
       run: terraform validate
       working-directory: ./infrastructure
 
+    - name: Create secrets.auto.tfvars
+      run: |
+        cat <<EOF > infrastructure/secrets.auto.tfvars
+        client_id     = "${{ secrets.ARM_CLIENT_ID }}"
+        client_secret = "${{ secrets.ARM_CLIENT_SECRET }}"
+        subscription_id = "${{ secrets.ARM_SUBSCRIPTION_ID }}"
+        tenant_id = "${{ secrets.ARM_TENANT_ID }}"
+        EOF
+
+
     - name: Terraform Plan
       env:
         ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
