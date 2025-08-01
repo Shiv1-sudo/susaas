@@ -1,0 +1,44 @@
+# .github/workflows/snyk.yml
+
+name: Build and Scan with Snyk
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  snyk-scan:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name:  Checkout code
+        uses: actions/checkout@v3
+
+      - name:  Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.11  # or match your local version
+
+      - name:  Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r backend/requirements.txt
+
+      - name:  Snyk scan for Python project
+        uses: snyk/actions/python@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          args: test --file=backend/requirements.txt --package-manager=pip --project-name=susaas-backend --skip-unresolved --debug
+      - name: Build Docker image
+        run: docker build -t susaas-backend -f Dockerfile .
+
+      - name: Snyk scan for Docker image
+        uses: snyk/actions/docker@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          image: susaas-backend
+          args: --file=Dockerfile --project-name=susaas-backend-container --severity-threshold=medium --exclude-base-image-vulns
