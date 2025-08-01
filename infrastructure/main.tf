@@ -31,6 +31,10 @@ resource "azurerm_cosmosdb_account" "susaas_cosmos" {
     location          = azurerm_resource_group.susaas_rg.location
     failover_priority = 0
   }
+
+  # ✅ Snyk Fixes
+  public_network_access_enabled      = false
+  access_key_metadata_writes_enabled = false
 }
 
 resource "azurerm_container_group" "susaas_backend" {
@@ -53,5 +57,5 @@ resource "azurerm_container_group" "susaas_backend" {
 
   ip_address_type = "Public"
   dns_name_label  = "${var.aci_dns_label}-${random_integer.suffix.result}"
-  tags           = var.tags
+  tags            = var.tags
 }
