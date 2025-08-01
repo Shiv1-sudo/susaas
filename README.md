@@ -56,4 +56,4 @@ docker run -p 8000:8000 susaas-backend
 - Extend CI/CD for multi-cloud deployment
 
 ---
-Created by ChatGPT
+
