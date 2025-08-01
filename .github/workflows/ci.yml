@@ -46,15 +46,15 @@ jobs:
 
     - name: Terraform Init
       run: terraform init
-      working-directory: ./iac
+      working-directory: ./infrastructure
 
     - name: Terraform Format
       run: terraform fmt -check
-      working-directory: ./iac
+      working-directory: ./infrastructure
 
     - name: Terraform Validate
       run: terraform validate
-      working-directory: ./iac
+      working-directory: ./infrastructure
 
     - name: Terraform Plan
       env:
@@ -63,7 +63,7 @@ jobs:
         ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
         ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
       run: terraform plan -var-file="secrets.auto.tfvars" -var-file="terraform.tfvars"
-      working-directory: ./iac
+      working-directory: ./infrastructure
 
     # Docker Build + Scan + Test
     - name: Build Docker image
