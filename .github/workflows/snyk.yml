@@ -23,11 +23,12 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r backend/requirements.txt
-
+          
       - name: Set up Snyk CLI
-        uses: snyk/actions/setup@v2  # pinned version
+        uses: snyk/actions/setup@v2
         with:
           version: 'latest'
+
 
       - name: Authenticate with Snyk
         run: snyk auth ${{ secrets.SNYK_TOKEN }}
