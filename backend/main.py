@@ -1,28 +1,50 @@
 from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel, HttpUrl
 from fastapi.responses import RedirectResponse
+from models import URLRequest
+from database import url_collection
 import os
+import hashlib
 
 app = FastAPI(title="SUSaaS - Secure URL Shortener as a Service")
 
-url_db = {}
-
-class URLRequest(BaseModel):
-    long_url: HttpUrl
-
-# Get BASE_URL from environment variable or fallback to localhost
 BASE_URL = os.getenv("BASE_URL", "http://localhost:8000")
 
+def generate_code(long_url) -> str:
+    return hashlib.md5(str(long_url).encode()).hexdigest()[:6]
+
 @app.post("/shorten")
-def shorten_url(url_req: URLRequest):
-    code = str(len(url_db) + 1).zfill(6)
-    url_db[code] = url_req.long_url
-    short_url = f"{BASE_URL}/{code}"
-    return {"short_url": short_url}
+async def shorten_url(url_req: URLRequest):
+    code = generate_code(url_req.long_url)
+    print(f"Generated code for URL: {code}")
+
+    try:
+        existing = await url_collection.find_one({"code": code})
+        if existing:
+            print("Found existing short URL")
+            return {"short_url": f"{BASE_URL}/{code}"}
+
+        await url_collection.insert_one({
+            "code": code,
+            "long_url": str(url_req.long_url)  # cast to string here!
+        })
+        print("New URL inserted into database")
+        return {"short_url": f"{BASE_URL}/{code}"}
+
+    except Exception as e:
+        print(f"DATABASE ERROR in shorten_url: {repr(e)}")
+        raise HTTPException(status_code=500, detail="Failed to shorten URL")
 
 @app.get("/{code}")
-def redirect_to_long_url(code: str):
-    long_url = url_db.get(code)
-    if not long_url:
-        raise HTTPException(status_code=404, detail="URL not found")
-    return RedirectResponse(long_url)
+async def redirect_to_long_url(code: str):
+    print(f"Attempting redirect for code: {code}")
+    try:
+        result = await url_collection.find_one({"code": code})
+        if not result:
+            raise HTTPException(status_code=404, detail="URL not found")
+
+        print(f"Redirecting to: {result['long_url']}")
+        return RedirectResponse(result["long_url"])
+
+    except Exception as e:
+        print(f"DATABASE ERROR in redirect_to_long_url: {repr(e)}")
+        raise HTTPException(status_code=500, detail="Failed to fetch original URL")
