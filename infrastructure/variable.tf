@@ -25,7 +25,7 @@ variable "client_secret" {
 variable "location" {
   description = "Azure region location"
   type        = string
-  default     = "canadacentral"
+  default     = "Canada Central"  # Changed to exact Azure region name
 }
 
 variable "docker_username" {
@@ -77,4 +77,17 @@ variable "tags" {
     environment = "dev"
     project     = "SUSaaS"
   }
+}
+
+# New variables for Cosmos MongoDB database and collection names
+variable "cosmos_mongo_db_name" {
+  description = "Cosmos MongoDB database name"
+  type        = string
+  default     = "susaas-mongo-db"
+}
+
+variable "cosmos_collection_name" {
+  description = "Cosmos MongoDB collection name"
+  type        = string
+  default     = "url-collection"
 }
