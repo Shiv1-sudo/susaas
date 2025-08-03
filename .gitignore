@@ -1,8 +1,17 @@
+# Secrets
+.env
+
+# Terraform
+infrastructure/.terraform/
+*.tfstate
+*.tfstate.backup
+*.tfplan
+
+# Python
 __pycache__/
 *.pyc
-.env
-.vscode/
-# .gitignore
-*.auto.tfvars
-.env
+
+# Docker
+*.log
+infrastructure/secrets.auto.tfvars
 .history/
