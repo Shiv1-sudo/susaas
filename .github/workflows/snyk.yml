@@ -25,7 +25,7 @@ jobs:
           pip install -r backend/requirements.txt
           
       - name: Set up Snyk CLI
-        uses: snyk/actions/setup@v2
+        uses: snyk/actions/setup@v4
         with:
           version: 'latest'
 
@@ -40,7 +40,7 @@ jobs:
         run: docker build -t susaas-backend -f backend/Dockerfile backend
 
       - name: Snyk scan for Docker image
-        uses: snyk/actions/docker@v2  # pinned version
+        uses: snyk/actions/docker@v4  # pinned version
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
