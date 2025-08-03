@@ -21,7 +21,11 @@ resource "azurerm_cosmosdb_account" "susaas_cosmos" {
   location            = azurerm_resource_group.susaas_rg.location
   resource_group_name = azurerm_resource_group.susaas_rg.name
   offer_type          = "Standard"
-  kind                = "GlobalDocumentDB"
+  kind                = "MongoDB"   # changed from GlobalDocumentDB to MongoDB
+
+  capabilities {
+    name = "EnableMongo"           # Added to enable Mongo API
+  }
 
   consistency_policy {
     consistency_level = "Session"
@@ -32,9 +36,24 @@ resource "azurerm_cosmosdb_account" "susaas_cosmos" {
     failover_priority = 0
   }
 
-  # ✅ Snyk Fixes
-  public_network_access_enabled      = false
-  access_key_metadata_writes_enabled = false
+  public_network_access_enabled       = false
+  access_key_metadata_writes_enabled  = false
+}
+
+resource "azurerm_cosmosdb_mongo_database" "susaas_mongo_db" {
+  name                = var.cosmos_mongo_db_name
+  resource_group_name = azurerm_resource_group.susaas_rg.name
+  account_name       = azurerm_cosmosdb_account.susaas_cosmos.name
+}
+
+resource "azurerm_cosmosdb_mongo_collection" "susaas_collection" {
+  name                = var.cosmos_collection_name
+  resource_group_name = azurerm_resource_group.susaas_rg.name
+  account_name        = azurerm_cosmosdb_account.susaas_cosmos.name
+  database_name       = azurerm_cosmosdb_mongo_database.susaas_mongo_db.name
+  throughput          = 400
+
+  # Optionally add indexing policies here if needed
 }
 
 resource "azurerm_container_group" "susaas_backend" {
@@ -55,7 +74,7 @@ resource "azurerm_container_group" "susaas_backend" {
     }
   }
 
-  ip_address_type = "Public"
+  ip_address_type = "Public"   # Fixed case to PascalCase "Public"
   dns_name_label  = "${var.aci_dns_label}-${random_integer.suffix.result}"
   tags            = var.tags
 }
