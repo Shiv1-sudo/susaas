@@ -1,5 +1,3 @@
-# .github/workflows/snyk.yml
-
 name: Build and Scan with Snyk
 
 on:
@@ -27,7 +25,7 @@ jobs:
           pip install -r backend/requirements.txt
 
       - name: Set up Snyk CLI
-        uses: snyk/actions/setup@master
+        uses: snyk/actions/setup@v2  # pinned version
         with:
           version: 'latest'
 
@@ -41,14 +39,14 @@ jobs:
         run: docker build -t susaas-backend -f backend/Dockerfile backend
 
       - name: Snyk scan for Docker image
-        uses: snyk/actions/docker@master
+        uses: snyk/actions/docker@v2  # pinned version
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
           image: susaas-backend
           args: --file=backend/Dockerfile --project-name=susaas-backend-container --severity-threshold=medium --exclude-base-image-vulns
 
-      #  NEW: Snyk scan for Terraform Infrastructure-as-Code
+      # Snyk scan for Terraform IaC
       - name: Snyk scan for Terraform IaC
         run: snyk iac test infrastructure/ --severity-threshold=medium
         env:
