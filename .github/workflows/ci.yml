@@ -1,5 +1,3 @@
-# .github/workflows/ci.yml
-
 name: SUSaaS CI Pipeline
 
 on:
@@ -38,7 +36,7 @@ jobs:
         cd backend
         bandit -r . -ll
 
-    # ✅ Terraform setup
+    # Terraform setup
     - name: Set up Terraform
       uses: hashicorp/setup-terraform@v3
       with:
@@ -65,7 +63,6 @@ jobs:
         tenant_id = "${{ secrets.ARM_TENANT_ID }}"
         EOF
 
-
     - name: Terraform Plan
       env:
         ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
@@ -75,12 +72,37 @@ jobs:
       run: terraform plan -var-file="secrets.auto.tfvars" -var-file="terraform.tfvars"
       working-directory: ./infrastructure
 
+    # **ADDED: Apply Terraform to deploy infra**
+    - name: Terraform Apply
+      env:
+        ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
+        ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
+        ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+        ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
+      run: terraform apply -auto-approve -var-file="secrets.auto.tfvars" -var-file="terraform.tfvars"
+      working-directory: ./infrastructure
+
     # Docker Build + Scan + Test
+
+    # **ADDED: Docker login to Docker Hub (replace with your DockerHub credentials secrets)**
+    - name: Docker Login
+      uses: docker/login-action@v2
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+
     - name: Build Docker image
       run: docker build -t susaas-backend ./backend
 
+    # **ADDED: Tag and push Docker image to Docker Hub**
+    - name: Tag Docker image
+      run: docker tag susaas-backend ${{ secrets.DOCKER_USERNAME }}/susaas-backend:latest
+
+    - name: Push Docker image
+      run: docker push ${{ secrets.DOCKER_USERNAME }}/susaas-backend:latest
+
     - name: Scan Docker image with Trivy
-      uses: aquasecurity/trivy-action@master
+      uses: aquasecurity/trivy-action@v0.12.0  # pinned version
       with:
         image-ref: susaas-backend
         format: table
