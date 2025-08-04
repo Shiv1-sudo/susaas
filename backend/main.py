@@ -18,7 +18,9 @@ async def health_check():
     return {"status": "ok"}
 
 def generate_code(long_url) -> str:
-    return hashlib.md5(str(long_url).encode()).hexdigest()[:6]
+    #return hashlib.md5(str(long_url).encode()).hexdigest()[:6] #sec
+    #return hashlib.md5(str(long_url).encode()).hexdigest()[:6]  # nosec B324
+    return hashlib.sha256(str(long_url).encode()).hexdigest()[:6]# Use SHA-256 instead of MD5
 
 @app.post("/shorten")
 async def shorten_url(url_req: URLRequest):
