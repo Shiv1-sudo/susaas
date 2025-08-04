@@ -19,6 +19,10 @@ RUN pip install --no-cache-dir --upgrade pip \
 # Copy application code
 COPY . .
 
+# NEW: Accept BASE_URL from build args and set as ENV
+ARG BASE_URL 
+ENV BASE_URL=${BASE_URL}
+
 # Change ownership to non-root user
 RUN chown -R appuser:appuser /app
 
