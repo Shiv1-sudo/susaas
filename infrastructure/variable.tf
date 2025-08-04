@@ -1,93 +1,73 @@
 variable "subscription_id" {
-  description = "Azure subscription ID"
-  type        = string
-  sensitive   = true
+  type = string
 }
 
 variable "tenant_id" {
-  description = "Azure tenant ID"
-  type        = string
-  sensitive   = true
+  type = string
 }
 
 variable "client_id" {
-  description = "Azure client ID"
-  type        = string
-  sensitive   = true
+  type = string
 }
 
 variable "client_secret" {
-  description = "Azure client secret"
-  type        = string
-  sensitive   = true
-}
-
-variable "location" {
-  description = "Azure region location"
-  type        = string
-  default     = "Canada Central"  # Changed to exact Azure region name
-}
-
-variable "docker_username" {
-  description = "Docker Hub username"
-  type        = string
-  sensitive   = true
-}
-
-variable "image_name" {
-  description = "Docker image name"
-  type        = string
-  default     = "susaas-backend"
-}
-
-variable "image_tag" {
-  description = "Docker image tag"
-  type        = string
-  default     = "latest"
+  type      = string
+  sensitive = true           # <-- Added sensitive flag to hide secret in output/logs
 }
 
 variable "resource_group_name" {
-  description = "Azure resource group name"
-  type        = string
-  default     = "susaas-rg"
+  type    = string
+  default = "susaas-rg"      # <-- Added default value
 }
 
-variable "aci_name" {
-  description = "Azure Container Instance name"
-  type        = string
-  default     = "susaas-aci"
+variable "location" {
+  type    = string
+  default = "canadacentral"  # <-- Added default value
 }
 
-variable "aci_dns_label" {
-  description = "DNS label for ACI"
-  type        = string
-  default     = "susaas-app"
-}
-
-variable "aci_port" {
-  description = "Port for ACI container"
-  type        = number
-  default     = 8000
-}
-
-variable "tags" {
-  description = "Resource tags"
-  type        = map(string)
-  default = {
-    environment = "dev"
-    project     = "SUSaaS"
-  }
-}
-
-# New variables for Cosmos MongoDB database and collection names
 variable "cosmos_mongo_db_name" {
-  description = "Cosmos MongoDB database name"
-  type        = string
-  default     = "susaas-mongo-db"
+  type    = string
+  default = "susaasdb"       # <-- Added default value
 }
 
 variable "cosmos_collection_name" {
-  description = "Cosmos MongoDB collection name"
-  type        = string
-  default     = "url-collection"
+  type    = string
+  default = "urls"           # <-- Added default value
+}
+
+variable "aci_name" {
+  type    = string
+  default = "susaas-aci"     # <-- Added default value
+}
+
+variable "docker_username" {
+  type = string
+}
+
+variable "image_name" {
+  type    = string
+  default = "susaas-backend" # <-- Added default value
+}
+
+variable "image_tag" {
+  type    = string
+  default = "latest"         # <-- Added default value
+}
+
+variable "aci_port" {
+  type    = number
+  default = 8000             # <-- Added default value
+}
+
+variable "aci_dns_label" {
+  type    = string
+  default = "susaas"         # <-- Added default value
+}
+
+variable "tags" {
+  type = map(string)         # <-- Explicit map type for tags
+  default = {                # <-- Default tags map
+    environment = "dev"
+    project     = "susaas"
+  }
 }
