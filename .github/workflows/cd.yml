@@ -1,0 +1,39 @@
+name: SUSaaS CD Pipeline
+
+on:
+  workflow_run:
+    workflows: ["SUSaaS CI Pipeline"]
+    types:
+      - completed
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+
+    steps:
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        client-id: ${{ secrets.ARM_CLIENT_ID }}
+        client-secret: ${{ secrets.ARM_CLIENT_SECRET }}
+        tenant-id: ${{ secrets.ARM_TENANT_ID }}
+        subscription-id: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+
+    - name: Clean up previous ACI deployment (if any)
+      run: |
+        az container delete \
+          --resource-group susaas-rg \
+          --name susaas-backend-aci \
+          --yes || true
+
+    - name: Deploy to Azure Container Instance
+      run: |
+        az container create \
+          --resource-group susaas-rg \
+          --name susaas-backend-aci \
+          --image ${{ secrets.DOCKER_USERNAME }}/susaas-backend:latest \
+          --cpu 1 \
+          --memory 1.5 \
+          --dns-name-label susaas-backend-${{ github.run_number }} \
+          --ports 8000
