@@ -51,7 +51,7 @@ jobs:
       working-directory: ./infrastructure
 
     - name: Terraform Validate
-      run: terraform validate
+      run: terraform validate -no-color
       working-directory: ./infrastructure
 
     - name: Create secrets.auto.tfvars
