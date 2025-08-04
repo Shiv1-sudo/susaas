@@ -4,10 +4,18 @@ from models import URLRequest
 from database import url_collection
 import os
 import hashlib
+from dotenv import load_dotenv  # NEW
+
+load_dotenv()  # NEW
 
 app = FastAPI(title="SUSaaS - Secure URL Shortener as a Service")
 
 BASE_URL = os.getenv("BASE_URL", "http://localhost:8000")
+
+# Add this endpoint # NEW
+@app.get("/health")
+async def health_check():
+    return {"status": "ok"}
 
 def generate_code(long_url) -> str:
     return hashlib.md5(str(long_url).encode()).hexdigest()[:6]
